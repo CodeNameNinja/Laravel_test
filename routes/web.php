@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Post;
 use App\Role;
+use App\Photo;
+use App\Country;
 use App\User;
 /*
 |--------------------------------------------------------------------------
@@ -115,7 +117,7 @@ Route::get('/about/{id}', "PostController@index");
 
 //ONE TO ONE RELATIONSHIP
 Route::get('/user/{id}/post', function($id){
-    return User::find(1)->post;
+    return User::find($id)->post;
 });
 
 //INVERSE
@@ -150,3 +152,33 @@ Route::get("user/{id}/pivot",function($id){
         echo $role->pivot;
     }
 });
+
+Route::get('/user/country/{id}', function($id){
+    $country = Country::find($id);
+
+    foreach($country->posts as $post){
+        echo $post;
+    }
+});
+//Polymorphic Relations
+
+Route::get('/user/{id}/photos',function($id){
+    $user = User::find($id);
+    foreach($user->photos as $photo){
+        echo $photo;
+    }
+});
+
+//Polymorphic Inverse
+Route::get('photo/{id}/post', function($id){
+    $photo = Photo::findOrFail($id);
+    return $photo->imageable;
+});
+
+// Forms & Validation
+
+Route::resource('/post', 'PostController');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
